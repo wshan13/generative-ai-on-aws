@@ -1,4 +1,4 @@
-# Based on https://github.com/christophschuhmann/improved-aesthetic-predictor/blob/fe88a163f4661b4ddabba0751ff645e2e620746e/simple_inference.py
+# https://github.com/christophschuhmann/improved-aesthetic-predictor/blob/fe88a163f4661b4ddabba0751ff645e2e620746e/simple_inference.py 코드 기
 
 from importlib import resources
 import torch
@@ -46,6 +46,6 @@ class AestheticScorer(torch.nn.Module):
         inputs = self.processor(images=images, return_tensors="pt")
         inputs = {k: v.to(self.dtype).to(device) for k, v in inputs.items()}
         embed = self.clip.get_image_features(**inputs)
-        # normalize embedding
+        # 임베딩을 정규화
         embed = embed / torch.linalg.vector_norm(embed, dim=-1, keepdim=True)
         return self.mlp(embed).squeeze(1)
