@@ -10,7 +10,7 @@ setup(
         "absl-py",
         "diffusers",
 #        "diffusers[torch]==0.17.1",
-#        "wandb",
+       "wandb",
         "torchvision",
         "inflect==6.0.4",
         "pydantic==1.10.9",
