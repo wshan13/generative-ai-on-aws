@@ -1,4 +1,4 @@
-# https://github.com/huggingface/diffusers/blob/fc6acb6b97e93d58cb22b5fee52d884d77ce84d8/src/diffusers/schedulers/scheduling_ddim.py 에서 복사되었습니다. 다음과 같은 수정이 포함되었습니다:
+# https://github.com/huggingface/diffusers/blob/fc6acb6b97e93d58cb22b5fee52d884d77ce84d8/src/diffusers/schedulers/scheduling_ddim.py 에서 복사되었습니다. 다음과 같은 수정이 포함되었습니다.
 # - U-Net을 활용한 예측값을 기반으로 `prev_sample`의 로그 확률을 계산하여 반환합니다.
 # - `variance_noise` 대신, `prev_sample`을 선택적 인수로 받습니다. `prev_sample`이 제공된 경우 이를 사용하여 로그 확률을 계산합니다.
 # - 타임스텝(timesteps)은 배치된 `torch.Tensor`로 처리될 수 있습니다.
