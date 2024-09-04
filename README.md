@@ -20,8 +20,8 @@
 * [안티 바르트(Antje Barth)](https://www.linkedin.com/in/antje-barth/)
 * [셸비 아이겐브로드(Shelbee Eigenbrode)](https://www.linkedin.com/in/shelbee-eigenbrode/)
 
-# Related Resources
-* YouTube Channel: https://youtube.generativeaionaws.com
-* Generative AI on AWS Meetup (Global, Virtual): https://meetup.generativeaionaws.com
-* Generative AI on AWS O'Reilly Book: https://www.amazon.com/Generative-AI-AWS-Multimodal-Applications/dp/1098159225/
-* Data Science on AWS O'Reilly Book: https://www.amazon.com/Data-Science-AWS-End-End/dp/1492079391/
+# 관련 자료
+* 유튜브 채널: https://youtube.generativeaionaws.com
+* AWS에서의 생성형 AI 밋업 (글로벌, 온라인): https://meetup.generativeaionaws.com
+* AWS에서의 생성형 AI - O'Reilly 서적: https://www.amazon.com/Generative-AI-AWS-Multimodal-Applications/dp/1098159225/
+* AWS에서의 데이터 과학 - O'Reilly 서적: https://www.amazon.com/Data-Science-AWS-End-End/dp/1492079391/
