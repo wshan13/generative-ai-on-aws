@@ -26,7 +26,7 @@ TEXT_GENERATION = "text-generation"
 GENERATED_TEXT = "generated_text"
 GENERATED_TEXTS = "generated_texts"
 
-# Possible model parameters
+# 가능한 모델 파라미터
 TEXT_INPUTS = "text_inputs"
 MAX_LENGTH = "max_length"
 NUM_RETURN_SEQUENCES = "num_return_sequences"
@@ -56,7 +56,7 @@ ALL_PARAM_NAMES = [
 ]
 
 
-# Model parameter ranges
+# 모델 파라미터 범위
 MAX_LENGTH_MIN = 1
 NUM_RETURN_SEQUENCE_MIN = 1
 NUM_BEAMS_MIN = 1
@@ -70,14 +70,14 @@ TEMPERATURE_MIN = 0
 
 
 def model_fn(model_dir: str) -> list:
-    """Create our inference task as a delegate to the model.
+    """모델에 대한 추론 작업을 대리로 생성합니다.
 
-    This runs only once per one worker.
+    작업자 한 명당 한 번만 실행됩니다.
 
     Args:
-        model_dir (str): directory where the model files are stored
+        model_dir (str): 모델 파일이 저장된 디렉토리
     Returns:
-        list: a huggingface tokenizer and model
+        list: 허깅페이스 토크나이저와 모델
     """
     
     print('walking model_dir: {}'.format(model_dir))
@@ -89,7 +89,7 @@ def model_fn(model_dir: str) -> list:
         for name in dirs:
             print(os.path.join(root, name))
             
-    # load the tokenizer and model
+    # 토크나이저와 모델 불러오기
     tokenizer = AutoTokenizer.from_pretrained(model_dir, use_fast=True)
     print(f'Loaded Local HuggingFace Tokenzier:\n{tokenizer}')
     model = AutoModelForSeq2SeqLM.from_pretrained(model_dir)
@@ -99,14 +99,14 @@ def model_fn(model_dir: str) -> list:
 
 
 def _validate_payload(payload: Dict[str, Any]) -> None:
-    """Validate the parameters in the input loads.
+    """입력 로드의 파라미터를 검증합니다.
 
-    Checks if max_length, num_return_sequences, num_beams, top_p and temprature are in bounds.
-    Checks if do_sample is boolean.
-    Checks max_length, num_return_sequences, num_beams and seed are integers.
+    max_length, num_return_sequences, num_beams, top_p, temprature 값이 유효한 범위에 있는지 확인합니다.
+    do_sample 값이 boolean인지 확인합니다.
+    max_length, num_return_sequences, num_beams, seed 값이 정수인지 확인합니다.
 
     Args:
-        payload: a decoded input payload (dictionary of input parameter and values)
+        payload: 디코딩된 입력 페이로드 (입력 파라미터와 값을 가진 딕셔너리)
     """
     for param_name in payload:
         assert (
@@ -155,24 +155,24 @@ def _validate_payload(payload: Dict[str, Any]) -> None:
 
 
 def _update_num_beams(payload: Dict[str, Union[str, float, int]]) -> Dict[str, Union[str, float, int]]:
-    """Add num_beans to the payload if missing and num_return_sequences is present."""
+    """num_return_sequences가 존재하고 num_beams가 누락된 경우, num_beams를 페이로드에 추가합니다."""
     if NUM_RETURN_SEQUENCES in payload and NUM_BEAMS not in payload:
         payload[NUM_BEAMS] = payload[NUM_RETURN_SEQUENCES]
     return payload
 
 
 def transform_fn(model_objs: list, input_data: bytes, content_type: str, accept: str) -> bytes:
-    """Make predictions against the model and return a serialized response.
+    """모델에 대한 예측을 수행하고 직렬화된 응답을 반환합니다.
 
-    The function signature conforms to the SM contract.
+    함수 서명은 세이지메이커 계약에 부합합니다.
 
     Args:
-        model_objs (list): tokenizer, model
-        input_data (obj): the request data.
-        content_type (str): the request content type.
-        accept (str): accept header expected by the client.
+        model_objs (list): 토크나이저, 모델
+        input_data (obj): 요청 데이터
+        content_type (str): 요청 내용 유형
+        accept (str): 클라이언트가 예상하는 받아들여질 헤더
     Returns:
-        obj: a byte string of the prediction
+        obj: 예측의 바이트 문자열
     """
     tokenizer = model_objs[0]
     model = model_objs[1]
@@ -197,7 +197,7 @@ def transform_fn(model_objs: list, input_data: bytes, content_type: str, accept:
             logging.exception("Failed to do inference")
             raise
 
-    # TODO: Incorporate JSON implementation for more inference options here
+    # TODO: 더 많은 추론 옵션을 위해 여기에 JSON 구현 통합 필요
     # elif content_type == APPLICATION_JSON:
     #     try:
     #         payload = json.loads(input_data)

@@ -17,9 +17,9 @@ import torch
 
 
 def parse_arge():
-    """Parse the arguments."""
+    """인수를 파싱합니다."""
     parser = argparse.ArgumentParser()
-    # add model id and dataset path argument
+    # 모델 ID와 데이터 세트 경로 인수 추가
     parser.add_argument(
         "--model_id",
         type=str,
@@ -74,19 +74,19 @@ def parse_arge():
     return args
 
 
-# # COPIED FROM https://github.com/artidoro/qlora/blob/main/qlora.py
+# # https://github.com/artidoro/qlora/blob/main/qlora.py 에서 복사한 코드
 # def print_trainable_parameters(model, use_4bit=False):
 #     """
-#     Prints the number of trainable parameters in the model.
+#     모델에서 학습 가능한 파라미터 수를 출력합니다.
 #     """
 #     trainable_params = 0
 #     all_param = 0
 #     for _, param in model.named_parameters():
 #         num_params = param.numel()
-#         # if using DS Zero 3 and the weights are initialized empty
+#         # DS Zero 3을 사용하고 가중치가 빈 상태로 초기화된 경우
 #         if num_params == 0 and hasattr(param, "ds_numel"):
 #             num_params = param.ds_numel
-
+#
 #         all_param += num_params
 #         if param.requires_grad:
 #             trainable_params += num_params
@@ -97,7 +97,7 @@ def parse_arge():
 #     )
 
 
-# COPIED FROM https://github.com/artidoro/qlora/blob/main/qlora.py
+# https://github.com/artidoro/qlora/blob/main/qlora.py 에서 복사한 코드
 # def find_all_linear_names(model):
 #     lora_module_names = set()
 # #    for name, module in model.named_modules():
@@ -119,20 +119,20 @@ def parse_arge():
 #     )
 #     from peft.tuners.lora import LoraLayer
 
-#     # # prepare int-4 model for training
+#     # # 훈련을 위해 int-4 모델 준비
 #     # model = prepare_model_for_kbit_training(
 #     #     model, use_gradient_checkpointing=gradient_checkpointing
 #     # )
 #     if gradient_checkpointing:
 #         model.gradient_checkpointing_enable()
 
-#     # get lora target modules
+#     # LoRA 대상 모듈 가져오기
 #     # modules = find_all_linear_names(model)
 
-# #     #If only targeting attention blocks of the model
+# #     # 모델의 어텐션 블록만 대상으로 하는 경우
 # #     modules = ["q_proj", "v_proj"]
 
-# #     #If targeting all linear layers
+# #     # 모든 선형 레이어를 대상으로 하는 경우
 # #     #target_modules = ['q_proj','k_proj','v_proj','o_proj','gate_proj','down_proj','up_proj','lm_head']
     
 # #     print(f"Found {len(modules)} modules to quantize: {modules}")
@@ -148,7 +148,7 @@ def parse_arge():
 
 # #     model = get_peft_model(model, peft_config)
 
-# #     # pre-process the model by upcasting the layer norms in float 32 for
+# #     # 'norm' 레이어를 float 32로 상향 변환하여 모델 전처리
 # #     for name, module in model.named_modules():
 # #         if isinstance(module, LoraLayer):
 # #             if bf16:
@@ -166,11 +166,11 @@ def parse_arge():
 
 
 def training_function(args):
-    # set seed
+    # 시드 설정
     set_seed(args.seed)
 
     dataset = load_from_disk(args.dataset_path)
-    # load model from the hub with a bnb config
+    # bnb 설정을 사용하여 허깅페이스 허브에서 모델 불러오기
     # bnb_config = BitsAndBytesConfig(
     #     load_in_4bit=True,
     #     bnb_4bit_use_double_quant=True,
@@ -182,33 +182,33 @@ def training_function(args):
         args.model_id,
         use_cache=False
         if args.gradient_checkpointing
-        else True,  # this is needed for gradient checkpointing
+        else True,  # 그래디언트 체크포인팅에 필요합니다
         device_map="auto",
 #        quantization_config=bnb_config,
     )
 
-#     # create peft config
+#     # PEFT 구성 생성
 #     model = create_peft_model(
 #         model, gradient_checkpointing=args.gradient_checkpointing, bf16=args.bf16
 #     )
 
-    # Define training args
+    # 훈련 인수 정의
     output_dir = "./tmp/llama2"
     training_args = TrainingArguments(
         output_dir=output_dir,
         per_device_train_batch_size=args.per_device_train_batch_size,
-        bf16=args.bf16,  # Use BF16 if available
+        bf16=args.bf16,  # 가능하면 BF16 사용
         learning_rate=args.lr,
         num_train_epochs=args.epochs,
         gradient_checkpointing=args.gradient_checkpointing,
-        # logging strategies
+        # 로깅 전략
         logging_dir=f"{output_dir}/logs",
         logging_strategy="steps",
         logging_steps=10,
         save_strategy="no",
     )
 
-    # Create Trainer instance
+    # 트레이너 인스턴스 생성
     trainer = Trainer(
         model=model,
         args=training_args,
@@ -216,29 +216,29 @@ def training_function(args):
         data_collator=default_data_collator,
     )
 
-    # Start training
+    # 훈련 시작
     trainer.train()
 
     sagemaker_save_dir="/opt/ml/model/"
 #     if args.merge_weights:
-#         # merge adapter weights with base model and save
-#         # save int 4 model
+#         # 어댑터 가중치를 기본 모델과 병합하고 저장
+#         # int-4 모델 저장
 #         trainer.model.save_pretrained(output_dir, safe_serialization=False)
-#         # clear memory
+#         # 메모리 정리
 #         del model
 #         del trainer
 #         torch.cuda.empty_cache()
 
 #         from peft import AutoPeftModelForCausalLM
 
-#         # load PEFT model in fp16
+#         # fp16에서 PEFT 모델 로드
 #         model = AutoPeftModelForCausalLM.from_pretrained(
 #             output_dir,
 #             low_cpu_mem_usage=True,
 #             torch_dtype=torch.bfloat16,
-#         )  
-#         # Merge LoRA and base model and save
-#         model = model.merge_and_unload()        
+#         )
+#         # LoRA와 기본 모델을 병합하고 저장
+#         model = model.merge_and_unload()
 #         model.save_pretrained(
 #             sagemaker_save_dir, safe_serialization=True, max_shard_size="2GB"
 #         )
@@ -247,7 +247,7 @@ def training_function(args):
         sagemaker_save_dir, safe_serialization=True
     )
 
-    # save tokenizer for easy inference
+    # 쉽게 추론할 수 있도록 토크나이저 저장
     tokenizer = AutoTokenizer.from_pretrained(args.model_id)
     tokenizer.save_pretrained(sagemaker_save_dir)
 
