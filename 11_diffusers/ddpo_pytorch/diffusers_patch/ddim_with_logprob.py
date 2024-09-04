@@ -1,16 +1,15 @@
-# Copied from https://github.com/huggingface/diffusers/blob/fc6acb6b97e93d58cb22b5fee52d884d77ce84d8/src/diffusers/schedulers/scheduling_ddim.py
-# with the following modifications:
-# - It computes and returns the log prob of `prev_sample` given the UNet prediction.
-# - Instead of `variance_noise`, it takes `prev_sample` as an optional argument. If `prev_sample` is provided,
-#   it uses it to compute the log prob.
-# - Timesteps can be a batched torch.Tensor.
+# https://github.com/huggingface/diffusers/blob/fc6acb6b97e93d58cb22b5fee52d884d77ce84d8/src/diffusers/schedulers/scheduling_ddim.py 에서 복사되었습니다. 다음과 같은 수정이 포함되었습니다.
+# - U-Net을 활용한 예측값을 기반으로 `prev_sample`의 로그 확률을 계산하여 반환합니다.
+# - `variance_noise` 대신, `prev_sample`을 선택적 인수로 받습니다. `prev_sample`이 제공된 경우 이를 사용하여 로그 확률을 계산합니다.
+# - 타임스텝(timesteps)은 배치된 `torch.Tensor`로 처리될 수 있습니다.
+
 
 from typing import Optional, Tuple, Union
 
 import math
 import torch
 
-from diffusers.utils import randn_tensor
+from diffusers.utils.torch_utils import randn_tensor
 from diffusers.schedulers.scheduling_ddim import DDIMSchedulerOutput, DDIMScheduler
 
 
@@ -43,29 +42,26 @@ def ddim_step_with_logprob(
     prev_sample: Optional[torch.FloatTensor] = None,
 ) -> Union[DDIMSchedulerOutput, Tuple]:
     """
-    Predict the sample at the previous timestep by reversing the SDE. Core function to propagate the diffusion
-    process from the learned model outputs (most often the predicted noise).
+    확률 미분 방정식(Stochastic Differential Equations; SDE)를 역으로 적용하여 이전 타임스텝에서의 샘플을 예측합니다.
+    이는 학습된 모델 출력(대부분 예측된 노이즈)을 기반으로 확산 과정을 진행하는 핵심 함수입니다.
 
-    Args:
-        model_output (`torch.FloatTensor`): direct output from learned diffusion model.
-        timestep (`int`): current discrete timestep in the diffusion chain.
-        sample (`torch.FloatTensor`):
-            current instance of sample being created by diffusion process.
-        eta (`float`): weight of noise for added noise in diffusion step.
-        use_clipped_model_output (`bool`): if `True`, compute "corrected" `model_output` from the clipped
-            predicted original sample. Necessary because predicted original sample is clipped to [-1, 1] when
-            `self.config.clip_sample` is `True`. If no clipping has happened, "corrected" `model_output` would
-            coincide with the one provided as input and `use_clipped_model_output` will have not effect.
-        generator: random number generator.
-        variance_noise (`torch.FloatTensor`): instead of generating noise for the variance using `generator`, we
-            can directly provide the noise for the variance itself. This is useful for methods such as
-            CycleDiffusion. (https://arxiv.org/abs/2210.05559)
-        return_dict (`bool`): option for returning tuple rather than DDIMSchedulerOutput class
 
-    Returns:
+    인수:
+        model_output (`torch.FloatTensor`): 학습된 확산 모델 출력.
+        timestep (`int`): 확산 체인의 현재 특정 타임스텝.
+        sample (`torch.FloatTensor`): 확산 과저에서 생성된 현재 샘플.
+        eta (`float`): 확산 단계에서 추가되는 노이즈의 가중치.
+        use_clipped_model_output (`bool`): `True`인 경우, 클리핑된 예측 원본 샘플에서 "수정된" `model_output`을 계산합니다.`self.config.clip_sample`가 `True` 일때 예측된 원본 샘플이 [-1, 1]로 클리핑될 때 필요합니다.
+             클리핑이 일어나지 않은 경우, "수정된" `model_output`은 입력으로 제공된 것과 일치하며, `use_clipped_model_output`은 영향을 미치지 않습니다.
+        generator: 랜덤 생성기. 
+        variance_noise (`torch.FloatTensor`): `generator`를 활용하여 분산을 통한 노이즈를 생성하는 대신, 분산 자체에 대한 노이즈를 직접 제공할 수 있습니다.
+             이는 CycleDiffusion과 같은 방법에 유용합니다. (https://arxiv.org/abs/2210.05559)
+        return_dict (`bool`): DDIMSchedulerOutput 클래스를 반환하는 대신 튜플을 반환하는 옵션.
+
+    반환값:
         [`~schedulers.scheduling_utils.DDIMSchedulerOutput`] or `tuple`:
-        [`~schedulers.scheduling_utils.DDIMSchedulerOutput`] if `return_dict` is True, otherwise a `tuple`. When
-        returning a tuple, the first element is the sample tensor.
+        `return_dict`가 True일 경우, [`~schedulers.scheduling_utils.DDIMSchedulerOutput`]를 반환하고, 그렇지 않으면 `tuple`을 반환합니다.
+        튜플을 반환하는 경우, 첫 번째 요소는 샘플 텐서입니다.
 
     """
     assert isinstance(self, DDIMScheduler)
@@ -74,10 +70,10 @@ def ddim_step_with_logprob(
             "Number of inference steps is 'None', you need to run 'set_timesteps' after creating the scheduler"
         )
 
-    # See formulas (12) and (16) of DDIM paper https://arxiv.org/pdf/2010.02502.pdf
-    # Ideally, read DDIM paper in-detail understanding
+    # DDIM 논문(https://arxiv.org/pdf/2010.02502.pdf)의 공식 (12)와 (16)을 참조하세요.
+    # 이상적으로는 DDIM 논문을 자세히 읽어 이해하시길 바랍니다.
 
-    # Notation (<variable name> -> <name in paper>
+    # 기호 (<변수명> -> <논문에서 언급한 변수명>)
     # - pred_noise_t -> e_theta(x_t, t)
     # - pred_original_sample -> f_theta(x_t, t) or x_0
     # - std_dev_t -> sigma_t
@@ -85,12 +81,12 @@ def ddim_step_with_logprob(
     # - pred_sample_direction -> "direction pointing to x_t"
     # - pred_prev_sample -> "x_t-1"
 
-    # 1. get previous step value (=t-1)
+    # 1. 이전 단계 값(=t-1)을 가져옵니다.
     prev_timestep = timestep - self.config.num_train_timesteps // self.num_inference_steps
-    # to prevent OOB on gather
+    # gather에서 OOB(Out of Bound)를 방지하기 위해 활용
     prev_timestep = torch.clamp(prev_timestep, 0, self.config.num_train_timesteps - 1)
 
-    # 2. compute alphas, betas
+    # 2. 알파와 베타를 계산합니다.
     alpha_prod_t = self.alphas_cumprod.gather(0, timestep.cpu())
     alpha_prod_t_prev = torch.where(
         prev_timestep.cpu() >= 0, self.alphas_cumprod.gather(0, prev_timestep.cpu()), self.final_alpha_cumprod
@@ -100,8 +96,8 @@ def ddim_step_with_logprob(
 
     beta_prod_t = 1 - alpha_prod_t
 
-    # 3. compute predicted original sample from predicted noise also called
-    # "predicted x_0" of formula (12) from https://arxiv.org/pdf/2010.02502.pdf
+    # 3. 예측된 노이즈로부터 예측된 원본 샘플을 계산합니다.
+    # 이는 https://arxiv.org/pdf/2010.02502.pdf 논문의 공식 (12)에서 "predicted x_0"라고도 합니다.
     if self.config.prediction_type == "epsilon":
         pred_original_sample = (sample - beta_prod_t ** (0.5) * model_output) / alpha_prod_t ** (0.5)
         pred_epsilon = model_output
@@ -117,7 +113,7 @@ def ddim_step_with_logprob(
             " `v_prediction`"
         )
 
-    # 4. Clip or threshold "predicted x_0"
+    # 4. "predicted x_0"은 클립하거나 임계값으로 제한
     if self.config.thresholding:
         pred_original_sample = self._threshold_sample(pred_original_sample)
     elif self.config.clip_sample:
@@ -125,20 +121,20 @@ def ddim_step_with_logprob(
             -self.config.clip_sample_range, self.config.clip_sample_range
         )
 
-    # 5. compute variance: "sigma_t(η)" -> see formula (16)
+    # 5. 분산을 계산합니다: "sigma_t(η)" -> 공식 (16) 참고
     # σ_t = sqrt((1 − α_t−1)/(1 − α_t)) * sqrt(1 − α_t/α_t−1)
     variance = _get_variance(self, timestep, prev_timestep)
     std_dev_t = eta * variance ** (0.5)
     std_dev_t = _left_broadcast(std_dev_t, sample.shape).to(sample.device)
 
     if use_clipped_model_output:
-        # the pred_epsilon is always re-derived from the clipped x_0 in Glide
+        # Glide에서는 pred_epsilon이 항상 클립된 x_0에서 다시 유도됩니다.
         pred_epsilon = (sample - alpha_prod_t ** (0.5) * pred_original_sample) / beta_prod_t ** (0.5)
 
-    # 6. compute "direction pointing to x_t" of formula (12) from https://arxiv.org/pdf/2010.02502.pdf
+    # 6. https://arxiv.org/pdf/2010.02502.pdf 논문의 공식 (12)에서 "x_t로 향하는 방향"을 계산
     pred_sample_direction = (1 - alpha_prod_t_prev - std_dev_t**2) ** (0.5) * pred_epsilon
 
-    # 7. compute x_t without "random noise" of formula (12) from https://arxiv.org/pdf/2010.02502.pdf
+    # 7. https://arxiv.org/pdf/2010.02502.pdf 논문의 공식 (12)에서 "랜덤 노이즈 없이 x_t"를 계산합니다.
     prev_sample_mean = alpha_prod_t_prev ** (0.5) * pred_original_sample + pred_sample_direction
 
     if prev_sample is not None and generator is not None:
@@ -153,13 +149,13 @@ def ddim_step_with_logprob(
         )
         prev_sample = prev_sample_mean + std_dev_t * variance_noise
 
-    # log prob of prev_sample given prev_sample_mean and std_dev_t
+    # prev_sample_mean과 std_dev_t를 주어진 prev_sample 로그 확률을 계산.
     log_prob = (
         -((prev_sample.detach() - prev_sample_mean) ** 2) / (2 * (std_dev_t**2))
         - torch.log(std_dev_t)
         - torch.log(torch.sqrt(2 * torch.as_tensor(math.pi)))
     )
-    # mean along all but batch dimension
+    # 배치 차원을 제외한 모든 차원에 대해 평균을 계산합니다.
     log_prob = log_prob.mean(dim=tuple(range(1, log_prob.ndim)))
 
     return prev_sample.type(sample.dtype), log_prob

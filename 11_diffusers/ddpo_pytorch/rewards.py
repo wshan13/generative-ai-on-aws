@@ -43,9 +43,9 @@ def aesthetic_score():
 
 
 def llava_strict_satisfaction():
-    """Submits images to LLaVA and computes a reward by matching the responses to ground truth answers directly without
-    using BERTScore. Prompt metadata must have "questions" and "answers" keys. See
-    https://github.com/kvablack/LLaVA-server for server-side code.
+    """
+    이미지를 언어-이미지 시각 어시스턴트(Language-Image Visual Assistant; LLaVA)에 입력하고, BERTScore를 사용하지 않고 응답을 정답과 직접 비교하여 보상을 계산합니다.
+    프롬프트 메타데이터에는 "질문"과 "정답" 키가 있어야 합니다. 서버 측 코드에 대한 내용은 https://github.com/kvablack/LLaVA-server에서 확인할 수 있습니다.
     """
     import requests
     from requests.adapters import HTTPAdapter, Retry
@@ -74,21 +74,21 @@ def llava_strict_satisfaction():
         for image_batch, metadata_batch in zip(images_batched, metadata_batched):
             jpeg_images = []
 
-            # Compress the images using JPEG
+            # 이미지를 JPEG 형식으로 압축
             for image in image_batch:
                 img = Image.fromarray(image)
                 buffer = BytesIO()
                 img.save(buffer, format="JPEG", quality=80)
                 jpeg_images.append(buffer.getvalue())
 
-            # format for LLaVA server
+            # 언어-이미지 시각 어시스턴트 서버에 맞게 포맷.
             data = {
                 "images": jpeg_images,
                 "queries": [m["questions"] for m in metadata_batch],
             }
             data_bytes = pickle.dumps(data)
 
-            # send a request to the llava server
+            # 언어-이미지 시각 어시스턴트 서버에 요청을 보냅니다.
             response = sess.post(url, data=data_bytes, timeout=120)
 
             response_data = pickle.loads(response.content)
@@ -110,8 +110,10 @@ def llava_strict_satisfaction():
 
 
 def llava_bertscore():
-    """Submits images to LLaVA and computes a reward by comparing the responses to the prompts using BERTScore. See
-    https://github.com/kvablack/LLaVA-server for server-side code.
+    """
+    이미지를 언어-이미지 시각 어시스턴트(Language-Image Visual Assistant; LLaVA)에 입력하고, BERTScore를 사용하여 응답을 프롬프트와 비교하여 보상을 계산합니다.
+    서버 측 코드에 대한 내용은 https://github.com/kvablack/LLaVA-server에서 확인할 수 있습니다.
+
     """
     import requests
     from requests.adapters import HTTPAdapter, Retry
@@ -142,14 +144,14 @@ def llava_bertscore():
         for image_batch, prompt_batch in zip(images_batched, prompts_batched):
             jpeg_images = []
 
-            # Compress the images using JPEG
+            # 이미지를 JPEG 형식으로 압축
             for image in image_batch:
                 img = Image.fromarray(image)
                 buffer = BytesIO()
                 img.save(buffer, format="JPEG", quality=80)
                 jpeg_images.append(buffer.getvalue())
 
-            # format for LLaVA server
+            # 언어-이미지 시각 어시스턴트 서버에 맞게 포맷
             data = {
                 "images": jpeg_images,
                 "queries": [["Answer concisely: what is going on in this image?"]] * len(image_batch),
@@ -157,16 +159,16 @@ def llava_bertscore():
             }
             data_bytes = pickle.dumps(data)
 
-            # send a request to the llava server
+            # 언어-이미지 시각 어시스턴트 서버에 요청을 보냅니다.
             response = sess.post(url, data=data_bytes, timeout=120)
 
             response_data = pickle.loads(response.content)
 
-            # use the recall score as the reward
+            # 리콜(recall) 점수를 보상으로 사용합니다.
             scores = np.array(response_data["recall"]).squeeze()
             all_scores += scores.tolist()
 
-            # save the precision and f1 scores for analysis
+            # 분석을 위해 정밀도와 F1 점수를 저장
             all_info["precision"] += np.array(response_data["precision"]).squeeze().tolist()
             all_info["f1"] += np.array(response_data["f1"]).squeeze().tolist()
             all_info["outputs"] += np.array(response_data["outputs"]).squeeze().tolist()
