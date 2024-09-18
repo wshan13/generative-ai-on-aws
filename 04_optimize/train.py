@@ -209,7 +209,7 @@ def train(  # pylint: disable=too-many-arguments,too-many-branches,too-many-loca
     )
 
     if args.validation_freq is not None:
-        # 모든 검증 예제 로드
+        # 모든 검증 예시 로드
         if smp.rank() == 0:
             logging.info("Creating val dataloader")
         if args.use_bert_data:
@@ -418,7 +418,7 @@ def train(  # pylint: disable=too-many-arguments,too-many-branches,too-many-loca
                     )
             # 검증에서 평가합니다.
             if args.validation_freq and not total_steps % args.validation_freq:
-                # GPT-NeoX에서 SDPTP를 사용하여 검증을 실행하면 캐시를 정리 해야 합니다.
+                # GPT-NeoX에서 SDPTP를 사용해 검증을 실행하면 캐시를 정리 해야 합니다.
                 torch.cuda.empty_cache()
                 cur_state = np.random.get_state()
                 model = model.eval()
@@ -975,10 +975,10 @@ def main():  # pylint: disable=too-many-branches,too-many-locals,too-many-statem
     torch.cuda.set_device(smp.local_rank())
 
     if not args.same_seed:
-        # tp_rank에 따라 시드를 설정하여 서로 다른 tp_rank에서 가중치가 동일해지는 것을 방지합니다.
+        # tp_rank에 따라 시드를 설정해 서로 다른 tp_rank에서 가중치가 동일해지는 것을 방지합니다.
         set_seed(args.seed + smp.tp_rank())
 
-    # smdistributed: DistributedModel 컨테이너를 사용하여 모델을 다양한 rank에 걸쳐 분할합니다. 
+    # smdistributed: DistributedModel 컨테이너를 사용해 모델을 다양한 rank에 걸쳐 분할합니다. 
     # 스크립트의 나머지 부분에서는 DistributedModel 클래스 인스턴스화에 제공된 모델 대신
     # 반환된 DistributedModel 객체를 사용해야 합니다.    
     if args.enable_memory_profiling > 0:
@@ -1176,7 +1176,7 @@ def main():  # pylint: disable=too-many-branches,too-many-locals,too-many-statem
             "model_config": model_config,
         }
         # pylint: disable=line-too-long
-        # 다음 API를 사용하여 SDP 체크포인트에서 전체 모델을 얻을 수도 있습니다.
+        # 다음 API를 사용해 SDP 체크포인트에서 전체 모델을 얻을 수도 있습니다.
         # > from smp.sharded_data_parallel_checkpoint import get_full_state_dict_from_sharded_data_parallel_checkpoint
         # > full_model = get_full_state_dict_from_sharded_data_parallel_checkpoint(args.model_dir, tag=f"sharded_data_parallel_final_full_{num_params}", dtype=torch.float32)
         # > if args.use_distributed_transformer > 0: # translate the state_dict to hf format if distributed transformer is used

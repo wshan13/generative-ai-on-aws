@@ -44,7 +44,7 @@ def aesthetic_score():
 
 def llava_strict_satisfaction():
     """
-    이미지를 언어-이미지 시각 어시스턴트(Language-Image Visual Assistant; LLaVA)에 입력하고, BERTScore를 사용하지 않고 응답을 정답과 직접 비교하여 보상을 계산합니다.
+    이미지를 언어-이미지 시각 어시스턴트(Language-Image Visual Assistant; LLaVA)에 입력하고, BERTScore를 사용하지 않고 응답을 정답과 직접 비교해 보상을 계산합니다.
     프롬프트 메타데이터에는 "질문"과 "정답" 키가 있어야 합니다. 서버 측 코드에 대한 내용은 https://github.com/kvablack/LLaVA-server에서 확인할 수 있습니다.
     """
     import requests
@@ -111,7 +111,7 @@ def llava_strict_satisfaction():
 
 def llava_bertscore():
     """
-    이미지를 언어-이미지 시각 어시스턴트(Language-Image Visual Assistant; LLaVA)에 입력하고, BERTScore를 사용하여 응답을 프롬프트와 비교하여 보상을 계산합니다.
+    이미지를 언어-이미지 시각 어시스턴트(Language-Image Visual Assistant; LLaVA)에 입력하고, BERTScore를 사용해 응답을 프롬프트와 비교해 보상을 계산합니다.
     서버 측 코드에 대한 내용은 https://github.com/kvablack/LLaVA-server에서 확인할 수 있습니다.
 
     """

@@ -25,7 +25,7 @@ from configuration_RW import RWConfig
 
 logger = logging.get_logger(__name__)
 
-# 참고(Hesslow): 불행히도 우리는 학습 중 matmul과 bias를 결합하지 않았습니다. 이로 인해 연산 간에 bfloat16으로 추가적인 양자화가 발생합니다.
+# 참고(Hesslow): 불행히도 학습 중 matmul과 bias를 결합하지 않았고, 이로 인해 연산 사이에 bfloat16으로 추가 양자화가 발생합니다.
 # HF 포트의 품질을 저하시키지 않기 위해, 최종 모델에서는 이러한 특성을 유지합니다.
 class Linear(nn.Linear):
     def forward(self, input: torch.Tensor) -> torch.Tensor:
@@ -47,7 +47,7 @@ def rotate_half(x):
 class RotaryEmbedding(torch.nn.Module):
     """GPT-NeoX에서 RotaryEmbedding의 구현입니다.
     이 구현은 [batch_size, n_heads_per_partition, seq_len, head_dim]과
-    호환되는 쿼리와 키에서 작동하도록 설계되었습니다 (예: MinGPTAttention 형식).
+    호환되는 쿼리와 키에서 작동하도록 설계됐습니다 (예: MinGPTAttention 형식).
     """
 
     def __init__(
@@ -224,7 +224,7 @@ class Attention(nn.Module):
         Returns:
             torch.tensor: [batch_size, seq_length, num_heads * head_dim]
         """
-        # 우리가 달성하려는 것:
+        # 우리가 달성하려는 바
         # batch_size * num_heads, seq_length, head_dim -> batch_size, seq_length, num_heads * head_dim
         batch_size_and_num_heads, seq_length, _ = x.shape
         batch_size = batch_size_and_num_heads // self.num_heads
@@ -713,7 +713,7 @@ class RWForCausalLM(RWPreTrainedModel):
         if past:
             input_ids = input_ids[:, -1].unsqueeze(-1)
 
-            # 캐시가 표준 형식(예: 대조적(contrastive) 검색)일 수 있으므로, 필요시 우리 형식으로 변환합니다.
+            # 캐시가 표준 형식(예: 대조적(contrastive) 검색)일 수 있어 필요시 우리 형식으로 변환합니다.
             if past[0][0].shape[0] == input_ids.shape[0]:
                 past = self._convert_to_rw_cache(past)
 

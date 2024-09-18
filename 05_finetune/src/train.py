@@ -7,7 +7,7 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, TrainingArguments
 from datasets import load_dataset
 
 def list_files(startpath):
-    """디렉토리 내 파일 목록을 표시하는 도우미 함수"""
+    """디렉터리 내 파일 목록을 표시하는 도우미 함수"""
     for root, dirs, files in os.walk(startpath):
         level = root.replace(startpath, '').count(os.sep)
         indent = ' ' * 4 * (level)
@@ -69,11 +69,11 @@ if __name__ == "__main__":
     ).with_format("torch")
     print(f'loaded dataset: {tokenized_dataset}')
     
-    # 훈련을 위한 데이터 세트 샘플링
+    # 학습을 위한 데이터 세트 샘플링
     skip_inds = int(1 / args.train_sample_percentage)
     sample_tokenized_dataset = tokenized_dataset.filter(lambda example, indice: indice % skip_inds == 0, with_indices=True)
 
-    # 모델 훈련
+    # 모델 학습
     output_dir = args.checkpoint_base_path
     training_args = TrainingArguments(
         output_dir=output_dir,
@@ -100,9 +100,9 @@ if __name__ == "__main__":
     model.save_pretrained(transformer_fine_tuned_model_path)
     tokenizer.save_pretrained(transformer_fine_tuned_model_path)
     
-    # 모델 추론을 위해 inference.py와 requirements.txt를 code/ 디렉토리로 복사
+    # 모델 추론을 위해 inference.py와 requirements.txt를 code/ 디렉터리로 복사
     #   참고: 이것은 세이지메이커 엔드포인트가 해당 파일을 인식하기 위해 필요한 코드 입니다.
-    #        하드코딩 되어있어서 반드시 code/ 디렉토리로 불러와야 합니다.
+    #        하드코딩 되어있어서 반드시 code/ 디렉터리로 불러와야 합니다.
     local_model_dir = os.environ["SM_MODEL_DIR"]
     inference_path = os.path.join(local_model_dir, "code/")
     print("Copying inference source files to {}".format(inference_path))

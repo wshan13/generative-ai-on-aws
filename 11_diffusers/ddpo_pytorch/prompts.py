@@ -11,7 +11,7 @@ ASSETS_PATH = resources.files("ddpo_pytorch.assets")
 @functools.cache
 def _load_lines(path):
     """
-    파일로부터 줄을 가져옵니다. 먼저 `path`에서 직업 가져오는걸 시도하고, 만약 존재하지 않으면 `ddpo_pytorch/assets` 경로에서 `path`라는 이름의 파일을 검색합니다.
+    파일로부터 줄을 가져옵니다. 먼저 `path`에서 직업 가져오는걸 시도하고, 존재하지 않으면 `ddpo_pytorch/assets` 경로에서 `path`라는 이름의 파일을 검색합니다.
     """
     if not os.path.exists(path):
         newpath = ASSETS_PATH.joinpath(path)

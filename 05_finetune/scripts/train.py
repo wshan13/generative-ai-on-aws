@@ -74,7 +74,7 @@ def parse_arge():
     return args
 
 
-# # https://github.com/artidoro/qlora/blob/main/qlora.py 에서 복사한 코드
+# # https://github.com/artidoro/qlora/blob/main/qlora.py에서 복사한 코드
 # def print_trainable_parameters(model, use_4bit=False):
 #     """
 #     모델에서 학습 가능한 파라미터 수를 출력합니다.
@@ -97,7 +97,7 @@ def parse_arge():
 #     )
 
 
-# https://github.com/artidoro/qlora/blob/main/qlora.py 에서 복사한 코드
+# https://github.com/artidoro/qlora/blob/main/qlora.py에서 복사한 코드
 # def find_all_linear_names(model):
 #     lora_module_names = set()
 # #    for name, module in model.named_modules():
@@ -119,7 +119,7 @@ def parse_arge():
 #     )
 #     from peft.tuners.lora import LoraLayer
 
-#     # # 훈련을 위해 int-4 모델 준비
+#     # # 학습을 위해 int-4 모델 준비
 #     # model = prepare_model_for_kbit_training(
 #     #     model, use_gradient_checkpointing=gradient_checkpointing
 #     # )
@@ -148,7 +148,7 @@ def parse_arge():
 
 # #     model = get_peft_model(model, peft_config)
 
-# #     # 'norm' 레이어를 float 32로 상향 변환하여 모델 전처리
+# #     # 'norm' 레이어를 float 32로 상향 변환해 모델 전처리
 # #     for name, module in model.named_modules():
 # #         if isinstance(module, LoraLayer):
 # #             if bf16:
@@ -170,7 +170,7 @@ def training_function(args):
     set_seed(args.seed)
 
     dataset = load_from_disk(args.dataset_path)
-    # bnb 설정을 사용하여 허깅페이스 허브에서 모델 불러오기
+    # bnb 설정을 사용해 허깅 페이스 허브에서 모델 불러오기
     # bnb_config = BitsAndBytesConfig(
     #     load_in_4bit=True,
     #     bnb_4bit_use_double_quant=True,
@@ -192,7 +192,7 @@ def training_function(args):
 #         model, gradient_checkpointing=args.gradient_checkpointing, bf16=args.bf16
 #     )
 
-    # 훈련 인수 정의
+    # 학습 인수 정의
     output_dir = "./tmp/llama2"
     training_args = TrainingArguments(
         output_dir=output_dir,
@@ -216,7 +216,7 @@ def training_function(args):
         data_collator=default_data_collator,
     )
 
-    # 훈련 시작
+    # 학습 시작
     trainer.train()
 
     sagemaker_save_dir="/opt/ml/model/"

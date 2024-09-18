@@ -75,9 +75,9 @@ def model_fn(model_dir: str) -> list:
     작업자 한 명당 한 번만 실행됩니다.
 
     Args:
-        model_dir (str): 모델 파일이 저장된 디렉토리
+        model_dir (str): 모델 파일이 저장된 디렉터리
     Returns:
-        list: 허깅페이스 토크나이저와 모델
+        list: 허깅 페이스 토크나이저와 모델
     """
     
     print('walking model_dir: {}'.format(model_dir))

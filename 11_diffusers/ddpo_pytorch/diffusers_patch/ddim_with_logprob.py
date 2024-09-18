@@ -1,6 +1,6 @@
-# https://github.com/huggingface/diffusers/blob/fc6acb6b97e93d58cb22b5fee52d884d77ce84d8/src/diffusers/schedulers/scheduling_ddim.py 에서 복사되었습니다. 다음과 같은 수정이 포함되었습니다.
-# - U-Net을 활용한 예측값을 기반으로 `prev_sample`의 로그 확률을 계산하여 반환합니다.
-# - `variance_noise` 대신, `prev_sample`을 선택적 인수로 받습니다. `prev_sample`이 제공된 경우 이를 사용하여 로그 확률을 계산합니다.
+# https://github.com/huggingface/diffusers/blob/fc6acb6b97e93d58cb22b5fee52d884d77ce84d8/src/diffusers/schedulers/scheduling_ddim.py에서 복사됐습니다. 다음과 같은 수정이 포함됐습니다.
+# - U-Net을 활용한 예측값을 기반으로 `prev_sample`의 로그 확률을 계산해 반환합니다.
+# - `variance_noise` 대신, `prev_sample`을 선택적 인수로 받습니다. `prev_sample`이 제공된 경우 이를 사용해 로그 확률을 계산합니다.
 # - 타임스텝(timesteps)은 배치된 `torch.Tensor`로 처리될 수 있습니다.
 
 
@@ -42,7 +42,7 @@ def ddim_step_with_logprob(
     prev_sample: Optional[torch.FloatTensor] = None,
 ) -> Union[DDIMSchedulerOutput, Tuple]:
     """
-    확률 미분 방정식(Stochastic Differential Equations; SDE)를 역으로 적용하여 이전 타임스텝에서의 샘플을 예측합니다.
+    확률 미분 방정식(Stochastic Differential Equations; SDE)를 역으로 적용해 이전 타임스텝에서의 샘플을 예측합니다.
     이는 학습된 모델 출력(대부분 예측된 노이즈)을 기반으로 확산 과정을 진행하는 핵심 함수입니다.
 
 
@@ -54,7 +54,7 @@ def ddim_step_with_logprob(
         use_clipped_model_output (`bool`): `True`인 경우, 클리핑된 예측 원본 샘플에서 "수정된" `model_output`을 계산합니다.`self.config.clip_sample`가 `True` 일때 예측된 원본 샘플이 [-1, 1]로 클리핑될 때 필요합니다.
              클리핑이 일어나지 않은 경우, "수정된" `model_output`은 입력으로 제공된 것과 일치하며, `use_clipped_model_output`은 영향을 미치지 않습니다.
         generator: 랜덤 생성기. 
-        variance_noise (`torch.FloatTensor`): `generator`를 활용하여 분산을 통한 노이즈를 생성하는 대신, 분산 자체에 대한 노이즈를 직접 제공할 수 있습니다.
+        variance_noise (`torch.FloatTensor`): `generator`를 활용해 분산을 통한 노이즈를 생성하는 대신, 분산 자체에 대한 노이즈를 직접 제공할 수 있습니다.
              이는 CycleDiffusion과 같은 방법에 유용합니다. (https://arxiv.org/abs/2210.05559)
         return_dict (`bool`): DDIMSchedulerOutput 클래스를 반환하는 대신 튜플을 반환하는 옵션.
 
@@ -121,7 +121,7 @@ def ddim_step_with_logprob(
             -self.config.clip_sample_range, self.config.clip_sample_range
         )
 
-    # 5. 분산을 계산합니다: "sigma_t(η)" -> 공식 (16) 참고
+    # 5. 분산을 계산합니다. "sigma_t(η)" -> 공식 (16) 참고
     # σ_t = sqrt((1 − α_t−1)/(1 − α_t)) * sqrt(1 − α_t/α_t−1)
     variance = _get_variance(self, timestep, prev_timestep)
     std_dev_t = eta * variance ** (0.5)

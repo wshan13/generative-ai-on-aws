@@ -26,7 +26,7 @@ def get_config():
     # 체크포인트에서부터 학습 재개. 정확한 체크포인트 경로(예: checkpoint_50) 또는 체크포인트를 포함하는 경로를 지정합니다.
     # 이 경우 최신 체크포인트가 사용됩니다. `config.use_lora`는 저장된 체크포인트를 생성할 실행과 동일한 값으로 설정해야 합니다.
     config.resume_from = ""
-    # 저순위 적응 사용 여부. 저순위 적응은 U-Net의 어텐션 레이어에 작은 가중치 행렬을 주입하여 메모리 사용을 크게 줄입니다.
+    # 저순위 적응 사용 여부. 저순위 적응은 U-Net의 어텐션 레이어에 작은 가중치 행렬을 주입해 메모리 사용을 크게 줄입니다.
     # 저순위 적응과 fp16, 배치 크기 1을 사용하면 스테이블 디퓨전의 미세 조정은 약 10GB의 GPU 메모리를 필요로 합니다.
     # 저순위 적응이 비활성화되면 학습하는데 많은 메모리가 소모되며 저장될 체크포인트 파일도 커집니다.
     config.use_lora = True
@@ -102,8 +102,8 @@ def get_config():
     config.reward_fn = "random_score" # "aesthetic_score" # "jpeg_compressibility"
 
     ###### 프롬프트별 통계 추적 ######
-    # 해당 파라미터가 활성화되면 모델은 프롬프트별로 보상의 평균과 표준 편차를 추적하고 이를 사용하여 이점을 계산합니다.
-    # 프롬프트별 통계 추적을 비활성화하려면 `config.per_prompt_stat_tracking`을 None으로 설정하며, 전체 배치의 평균과 표준 편차를 사용하여 이점이 계산됩니다.
+    # 해당 파라미터가 활성화되면 모델은 프롬프트별로 보상의 평균과 표준 편차를 추적하고 이를 사용해 이점을 계산합니다.
+    # 프롬프트별 통계 추적을 비활성화하려면 `config.per_prompt_stat_tracking`을 None으로 설정하며, 전체 배치의 평균과 표준 편차를 사용해 이점이 계산됩니다.
     config.per_prompt_stat_tracking = ml_collections.ConfigDict()
     # 각 프롬프트에 대해 버퍼에 저장할 보상 값 수. 버퍼는 에포크를 넘어 지속됩니다.
     config.per_prompt_stat_tracking.buffer_size = 16

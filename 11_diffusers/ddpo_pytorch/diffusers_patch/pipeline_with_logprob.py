@@ -36,7 +36,7 @@ def pipeline_with_logprob(
     guidance_rescale: float = 0.0,
 ):
     r"""
-    이 함수는 파이프라인을 호출하여 이미지 생성 작업을 수행할 때 호출됩니다.
+    이 함수는 파이프라인을 호출해 이미지 생성 작업을 수행할 때 호출됩니다.
 
     인:
         prompt (`str` or `List[str]`, *optional*):
@@ -50,7 +50,7 @@ def pipeline_with_logprob(
         guidance_scale (`float`, *optional*, defaults to 7.5):
             [분류기를 활용하지 않은 확산 안내(Classifier-Free Diffusion Guidance)](https://arxiv.org/abs/2207.12598) 정의된 안내된 스케일입니다.
             `guidance_scale`은 [Imagen 논문](https://arxiv.org/pdf/2205.11487.pdf)에서 식 2의 `w`로 정의됩니다.
-            안내된 스케일은 `guidance_scale > 1`로 설정하여 활성화됩니다. 더 큰 안내된 스케일은 텍스트 프롬프트와 밀접하게 연관된 이미지를 생성하도록 유도하지만, 일반적으로 이미지 품질이 낮아질 수 있습니다.
+            안내된 스케일은 `guidance_scale > 1`로 설정해 활성화됩니다. 더 큰 안내된 스케일은 텍스트 프롬프트와 밀접하게 연관된 이미지를 생성하도록 유도하지만, 일반적으로 이미지 품질이 낮아질 수 있습니다.
         negative_prompt (`str` or `List[str]`, *optional*):
             이미지 생성을 지침하지 않는 프롬프트 또는 프롬프트들입니다.
             정의되지 않는 대신 `negative_prompt_embeds`를 전달해야 합니다. `guidance_scale`이 1보다 작은 경우에 무시됩니다.
@@ -63,7 +63,7 @@ def pipeline_with_logprob(
             생성 과정을 결정적으로 만들기 위해 하나 이상의 [torch generator(s)](https://pytorch.org/docs/stable/generated/torch.Generator.html) 리스트 입니다.
         latents (`torch.FloatTensor`, *optional*):
             사전 생성된 노이즈 잠재 변수로, 가우시안 분포에서 샘플링된 것이며, 이미지 생성을 위한 입력으로 사용됩니다.
-            다양한 프롬프트로 동일한 생성을 조정하는 데 사용할 수 있습니다. 제공되지 않으면, 제공된 랜덤 `generator`를 사용하여 잠재 변수 텐서가 생성됩니다.
+            다양한 프롬프트로 동일한 생성을 조정하는 데 사용할 수 있습니다. 제공되지 않으면, 제공된 랜덤 `generator`를 사용해 잠재 변수 텐서가 생성됩니다.
         prompt_embeds (`torch.FloatTensor`, *optional*):
             사전 생성된 텍스트 임베딩입니다. 텍스트 입력을 쉽게 조정하는 데 사용할 수 있습니다.(예시: 프롬프트 가중치)
             제공되지 않으면, 텍스트 임베딩이 `prompt` 입력 인수에서 생성됩니다.

@@ -17,8 +17,8 @@
 
 ## 저자
 * [크리스 프레글리(Chris Fregly)](https://www.linkedin.com/in/cfregly/)
-* [안티 바르트(Antje Barth)](https://www.linkedin.com/in/antje-barth/)
-* [셸비 아이겐브로드(Shelbee Eigenbrode)](https://www.linkedin.com/in/shelbee-eigenbrode/)
+* [안체 바르트(Antje Barth)](https://www.linkedin.com/in/antje-barth/)
+* [셸비 아이겐브로데(Shelbee Eigenbrode)](https://www.linkedin.com/in/shelbee-eigenbrode/)
 
 # 관련 자료
 * 유튜브 채널: https://youtube.generativeaionaws.com
