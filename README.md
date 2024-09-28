@@ -1,6 +1,6 @@
-# [《AWS 기반 생성형 AI》](https://www.amazon.com/Generative-AI-AWS-Multimodal-Applications/dp/1098159225/) (위키북스, 2024)
+# [《AWS 기반 생성형 AI》](https://wikibook.co.kr/gai-aws/) (위키북스, 2024)
 
-[![](img/gaia_book_cover_sm.png)](https://www.amazon.com/Generative-AI-AWS-Multimodal-Applications/dp/1098159225/)
+[![](img/gaia_book_cover_sm.png)](https://wikibook.co.kr/gai-aws/)
 
 * [1장](/01_intro) - 생성형 AI 활용 사례, 기본 사항 및 프로젝트 생명 주기
 * [2장](/02_prompt) - 프롬프트 엔지니어링과 콘텍스트 내 학습
